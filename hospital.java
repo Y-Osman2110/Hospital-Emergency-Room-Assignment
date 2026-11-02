@@ -36,15 +36,15 @@ public class hospital {
             patients[i].start();
         }
 
-        // wait until every patient has left
+        
         for (Patient p : patients)
             p.join();
 
-        // all patients are done, so wake the idle doctors with an interrupt
+       
         for (Doctor d : doctors)
             d.interrupt();
 
-        // wait until every doctor thread has exited
+       
         for (Doctor d : doctors)
             d.join();
 
