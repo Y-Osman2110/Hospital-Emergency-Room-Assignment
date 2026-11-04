@@ -15,19 +15,18 @@ public class hospital {
         System.out.print("Number of patients: ");
         int numofPatients = in.nextInt();
 
-        WaitingRoom waitingRoom = new WaitingRoom(capacity);
-        TreatmentRooms treatingRooms = new TreatmentRooms(2);
+        WaitingRoom waitingRoom = new WaitingRoom(capacity, numofPatients);
+        TreatmentRooms treatingRooms = new TreatmentRooms();
 
         StringBuilder names = new StringBuilder();
-        for (int i = 1; i <= numofPatients; i++)
-            names.append("P").append(i).append(" ");
+        for (int i = 1; i <= numofPatients; i++) names.append("P").append(i).append(" ");
         log("Patients arriving:");
         log(names.toString().trim());
 
-        Doctor[] doctors = new Doctor[numofDoctors];
+        Thread[] doctorThreads = new Thread[numofDoctors];
         for (int i = 0; i < numofDoctors; i++) {
-            doctors[i] = new Doctor(i + 1, waitingRoom, treatingRooms);
-            doctors[i].start();
+            doctorThreads[i] = new Thread(new Doctor(i + 1, waitingRoom, treatingRooms));
+            doctorThreads[i].start();
         }
 
         Patient[] patients = new Patient[numofPatients];
@@ -36,17 +35,8 @@ public class hospital {
             patients[i].start();
         }
 
-        
-        for (Patient p : patients)
-            p.join();
-
-       
-        for (Doctor d : doctors)
-            d.interrupt();
-
-       
-        for (Doctor d : doctors)
-            d.join();
+        for (Patient p : patients) p.join();
+        for (Thread d : doctorThreads) d.join();
 
         log("All patients have been treated.");
         log("Simulation completed.");
